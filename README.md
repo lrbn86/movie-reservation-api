@@ -5,6 +5,7 @@ Browse movies and reserve seats for specific showtimes
 * [Features](#features)
 * [Setup](#setup)
 * [API Documentation](#api-documentation)
+* [License](#license)
 
 ## Features
 * User - register, login, profile update, password reset
@@ -59,3 +60,6 @@ Login the user
 #### Reservations
 #### Payments
 #### Notifications
+
+### License
+This project is licensed under MIT
