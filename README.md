@@ -58,6 +58,10 @@ This API follows conventional HTTP response codes to indicate success or failure
   * [`PUT /api/movies/:movieId`](#put-apimoviesmovieid)
   * [`DELETE /api/movies/:movieId`](#delete-apimoviesmovieid)
 * [Reservations](#reservations)
+  * [`POST /api/reservations`](#post-apireservations)
+  * [`GET /api/reservations`](#get-apireservations)
+  * [`PUT /api/reservations/:reservationId`](#put-apireservationsreservationid)
+  * [`DELETE /api/reservations/:reservationsId`](#put-apireservationsreservationid)
 * [Payments](#payments)
 * [Notifications](#notifications)
 
@@ -87,8 +91,19 @@ Update a movie
 Delete a movie
 
 #### Reservations
+##### POST /api/reservations
+Add a reservation
+##### GET /api/reservations
+Get all the reservations
+##### PUT /api/reservations/:reservationId
+Update a reservation
+##### DELETE /api/reservation/:reservationId
+Delete a reservation
+
 #### Payments
+TBA
 #### Notifications
+TBA
 
 ## License
 This project is licensed under the [MIT License](LICENSE)
