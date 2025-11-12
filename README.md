@@ -32,28 +32,30 @@ For more commands, check the `package.json` file
 
 ## API Documentation
 ### Endpoints
-* Authentication
+* [Authentication](#authentication)
   * [`POST /api/auth/register`](#post-apiauthregister)
   * [`POST /api/auth/login`](#post-apiauthlogin)
-* Movies
-* Reservations
-* Payments
-* Notifications
+* [Movies](#movies)
+* [Reservations](#reservations)
+* [Payments](#payments)
+* [Notifications](#notifications)
 
----
-
-#### POST /api/auth/register
+#### Authentication
+##### POST /api/auth/register
 Register the user
 | Request Body Parameter | Description | Required |
 | - | - | - |
 | email | The email of the user | Yes |
 | password | The password of the user | Yes |
 
----
-
-#### POST /api/auth/login
+##### POST /api/auth/login
 Login the user
 | Request Body Parameter | Description | Required |
 | - | - | - |
 | email | The email of the user | Yes |
 | password | The password of the user | Yes |
+
+#### Movies
+#### Reservations
+#### Payments
+#### Notifications
