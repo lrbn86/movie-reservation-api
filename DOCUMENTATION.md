@@ -1,5 +1,4 @@
 # API Documentation
-This API uses JWT to authenticate requests. Register an account and login to receive a JWT. Place the JWT in the request's authorization header when making a request.
 
 ## Errors
 This API follows conventional HTTP response codes to indicate success or failure of a request
@@ -29,10 +28,10 @@ This API follows conventional HTTP response codes to indicate success or failure
   * [`GET /api/reservations`](#get-apireservations)
   * [`PUT /api/reservations/:reservationId`](#put-apireservationsreservationid)
   * [`DELETE /api/reservations/:reservationsId`](#put-apireservationsreservationid)
-* [Payments](#payments)
-* [Notifications](#notifications)
 
 ## Authentication
+This API uses JWT to authenticate requests. Register an account and login to receive a JWT. Place the JWT in the request's authorization header when making a request.
+
 ### POST /api/auth/register
 Register the user
 | Request Body Parameter | Description | Required |
@@ -48,12 +47,15 @@ Login the user and receive a JWT to authenticate future requests
 | password | The password of the user | Yes |
 
 ## Movies
+Only the admins can add, update, and delete movies. Regular users can only read movies.
+
 ### POST /api/movies
 Add a movie
 | Request Body Parameter | Description | Required |
 | - | - | - |
 | title | The title of the movie | Yes |
 | description | The description of the movie | Yes |
+| genre | The genre of the movie | Yes |
 
 ### GET /api/movies
 Get all the movies
@@ -64,11 +66,14 @@ Update a movie by a movieId
 | - | - | - |
 | title | The new title of the movie | No |
 | description | The new description of the movie | No |
+| genre | The new genre of the movie | No |
 
 ### DELETE /api/movies/:movieId
 Delete a movie by a movieId
 
 ## Reservations
+Only the admins can see all reservations, capacity, and revenue
+
 ### POST /api/reservations
 Add a reservation
 | Request Body Parameter | Description | Required |
@@ -90,9 +95,3 @@ Update a reservation by reservationId
 
 ### DELETE /api/reservation/:reservationId
 Delete a reservation by reservationId
-
-## Payments
-TBA
-
-## Notifications
-TBA
