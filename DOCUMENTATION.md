@@ -41,7 +41,7 @@ Register the user
 | password | The password of the user | Yes |
 
 ### POST /api/auth/login
-Login the user
+Login the user and receive a JWT to authenticate future requests
 | Request Body Parameter | Description | Required |
 | - | - | - |
 | email | The email of the user | Yes |
@@ -50,24 +50,49 @@ Login the user
 ## Movies
 ### POST /api/movies
 Add a movie
+| Request Body Parameter | Description | Required |
+| - | - | - |
+| title | The title of the movie | Yes |
+| description | The description of the movie | Yes |
+
 ### GET /api/movies
 Get all the movies
+
 ### PUT /api/movies/:movieId
-Update a movie
+Update a movie by a movieId
+| Request Body Parameter | Description | Required |
+| - | - | - |
+| title | The new title of the movie | No |
+| description | The new description of the movie | No |
+
 ### DELETE /api/movies/:movieId
-Delete a movie
+Delete a movie by a movieId
 
 ## Reservations
 ### POST /api/reservations
 Add a reservation
+| Request Body Parameter | Description | Required |
+| - | - | - |
+| title | The new title of the movie | Yes |
+| seats | The number of seats booked | Yes |
+| time | The time of the reservation | Yes |
+
 ### GET /api/reservations
 Get all the reservations
+
 ### PUT /api/reservations/:reservationId
-Update a reservation
+Update a reservation by reservationId
+| Request Body Parameter | Description | Required |
+| - | - | - |
+| title | The new title of the movie | No |
+| seats | The number of seats booked | No |
+| time | The time of the reservation | No |
+
 ### DELETE /api/reservation/:reservationId
-Delete a reservation
+Delete a reservation by reservationId
 
 ## Payments
 TBA
+
 ## Notifications
 TBA
