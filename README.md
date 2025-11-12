@@ -32,7 +32,7 @@ npm run test
 For more commands, check the `package.json` file
 
 ## API Documentation
-See [DOCUMENTATION](DOCUMENTATION) for detailed API documentation
+See [DOCUMENTATION](DOCUMENTATION.md) for detailed API documentation
 
 ## License
 This project is licensed under the [MIT License](LICENSE)
