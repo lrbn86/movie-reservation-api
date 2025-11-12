@@ -62,4 +62,4 @@ Login the user
 #### Notifications
 
 ## License
-This project is licensed under [MIT](LICENSE)
+This project is licensed under the [MIT License](LICENSE)
