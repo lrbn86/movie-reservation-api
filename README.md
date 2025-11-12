@@ -61,5 +61,5 @@ Login the user
 #### Payments
 #### Notifications
 
-### License
+## License
 This project is licensed under MIT
