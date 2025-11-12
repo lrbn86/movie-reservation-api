@@ -32,8 +32,14 @@ For more commands, check the `package.json` file
 
 ## API Documentation
 ### Endpoints
-* [`POST /api/auth/register`](#post-apiauthregister)
-* [`POST /api/auth/login`](#post-apiauthlogin)
+* Authentication
+  * [`POST /api/auth/register`](#post-apiauthregister)
+  * [`POST /api/auth/login`](#post-apiauthlogin)
+* Movies
+* Reservations
+* Payments
+* Notifications
+
 ---
 
 #### POST /api/auth/register
@@ -42,6 +48,7 @@ Register the user
 | - | - | - |
 | email | The email of the user | Yes |
 | password | The password of the user | Yes |
+
 ---
 
 #### POST /api/auth/login
