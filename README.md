@@ -14,7 +14,7 @@ Browse movies and reserve seats for specific showtimes
 * Notifications - email/sms confirmation, reminders
 
 ## Setup
-1. Get project locally
+1. Get the project locally
 ```bash
 git clone https://github.com/lrbn86/movie-reservation-api.git
 cd movie-reservation-api
@@ -34,6 +34,7 @@ For more commands, check the `package.json` file
 ### Endpoints
 * [`POST /api/auth/register`](#post-apiauthregister)
 * [`POST /api/auth/login`](#post-apiauthlogin)
+---
 
 #### POST /api/auth/register
 Register the user
@@ -41,6 +42,7 @@ Register the user
 | - | - | - |
 | email | The email of the user | Yes |
 | password | The password of the user | Yes |
+---
 
 #### POST /api/auth/login
 Login the user
