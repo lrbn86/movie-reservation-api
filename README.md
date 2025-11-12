@@ -32,6 +32,22 @@ npm run test
 For more commands, check the `package.json` file
 
 ## API Documentation
+This API uses JWT to authenticate requests. Register an account and login to receive a JWT. Place the JWT in the request's authorization header when making a request.
+
+### Errors
+This API follows conventional HTTP response codes to indicate success or failure of a request
+
+| Code | Description |
+| - | - |
+| 200 | Everything worked as expected |
+| 400 | The client is sending a bad request to the API |
+| 401 | The client is not authenticated |
+| 403 | The client is authenticated, but does not have the permissions to make the request |
+| 404 | The resource does not exist |
+| 409 | The request conflicts with another request |
+| 429 | Too many requests hit the API too quickly |
+| 500 | The server has internal errors that must be resolved by the API developer |
+
 ### Endpoints
 * [Authentication](#authentication)
   * [`POST /api/auth/register`](#post-apiauthregister)
