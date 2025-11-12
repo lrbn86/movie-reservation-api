@@ -53,6 +53,10 @@ This API follows conventional HTTP response codes to indicate success or failure
   * [`POST /api/auth/register`](#post-apiauthregister)
   * [`POST /api/auth/login`](#post-apiauthlogin)
 * [Movies](#movies)
+  * [`POST /api/movies`](#post-apimovies)
+  * [`GET /api/movies`](#get-apimovies)
+  * [`PUT /api/movies/:movieId`](#put-apimoviesmovieid)
+  * [`DELETE /api/movies/:movieId`](#delete-apimoviesmovieid)
 * [Reservations](#reservations)
 * [Payments](#payments)
 * [Notifications](#notifications)
@@ -73,6 +77,15 @@ Login the user
 | password | The password of the user | Yes |
 
 #### Movies
+##### POST /api/movies
+Add a movie
+##### GET /api/movies
+Get all the movies
+##### PUT /api/movies/:movieId
+Update a movie
+##### DELETE /api/movies/:movieId
+Delete a movie
+
 #### Reservations
 #### Payments
 #### Notifications
