@@ -4,7 +4,7 @@
   "description": "Browse movies and reserve seats for specific showtimes",
   "main": "index.js",
   "scripts": {
-    "start": "node . ",
+    "start": "node --watch .",
     "test": "node --test"
   },
   "repository": {
@@ -17,5 +17,14 @@
   "bugs": {
     "url": "https://github.com/lrbn86/movie-reservation-api/issues"
   },
-  "homepage": "https://github.com/lrbn86/movie-reservation-api#readme"
+  "homepage": "https://github.com/lrbn86/movie-reservation-api#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "pg": "^8.16.3"
+  }
 }
