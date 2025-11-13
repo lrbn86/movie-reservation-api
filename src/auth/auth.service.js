@@ -2,7 +2,11 @@ import bcrypt from 'bcryptjs';
 import authRepository from './auth.repository.js';
 
 async function createUser(user) {
+  if (!user?.email) throw new Error('Email is required');
+  if (!user?.password) throw new Error('Password is required');
+
   const passwordHash = await bcrypt.hash(user.password, 10);
+
   return authRepository.create({ email: user.email, password: passwordHash });
 }
 

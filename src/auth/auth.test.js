@@ -21,4 +21,33 @@ describe('Auth Service Test', () => {
     assert.equal(authRepository.create.mock.calls[0].arguments[0].email, user.email);
     assert.equal(authRepository.create.mock.calls[0].arguments[0].password, 'fake-hash');
   });
+
+  it('should throw error if bcrypt.has fails', async () => {
+    bcrypt.hash.mock.mockImplementationOnce(async () => { throw new Error() });
+    const user = { email: 'admin@email.com', password: 'pass123' };
+    await assert.rejects(authService.createUser(user));
+  });
+
+  it('should throw error if authRepository.create fails', async () => {
+    authRepository.create.mock.mockImplementationOnce(async () => { throw new Error() });
+    const user = { email: 'admin@email.com', password: 'pass123' };
+    await assert.rejects(authService.createUser(user));
+  });
+
+  it('should throw error if invalid email is provided', async () => {
+    await assert.rejects(authService.createUser());
+    await assert.rejects(authService.createUser({}));
+    await assert.rejects(authService.createUser({ password: 'pass123' }));
+    await assert.rejects(authService.createUser({ email: null, password: 'pass123' }));
+    await assert.rejects(authService.createUser({ email: '', password: 'pass123' }));
+  });
+
+  it('should throw error if invalid password is provided', async () => {
+    await assert.rejects(authService.createUser());
+    await assert.rejects(authService.createUser({}));
+    await assert.rejects(authService.createUser({ email: 'admin@email.com' }));
+    await assert.rejects(authService.createUser({ email: 'admin@email.com', password: null }));
+    await assert.rejects(authService.createUser({ email: 'admin@email.com', password: '' }));
+  });
+
 });

@@ -1,6 +1,6 @@
 {
   "name": "movie-reservation-api",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Browse movies and reserve seats for specific showtimes",
   "main": "index.js",
   "scripts": {
