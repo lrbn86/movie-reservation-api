@@ -1,8 +1,8 @@
 import db from '../util/db.js';
-import crypto from 'node:crypto';
 
 export async function create(user) {
-  return { id: crypto.randomUUID(), ...user };
+  const result = await db.insert('users', { email: user.email, password: user.password });
+  return result;
 }
 
 export default {

@@ -1,17 +1,22 @@
-import authRepository from './auth.repository.js';
 import authService from './auth.service.js';
 
 export async function register(req, res) {
-  if (!req.body?.email || !req.body?.password) {
+  const email = req.body?.email
+  const password = req.body?.password;
+
+  if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
-  const { email, password } = req.body;
   const user = { email, password };
 
-  await authService.createUser(authRepository, user);
+  try {
+    await authService.createUser(user);
+  } catch (err) {
+    return res.status(409).json(err.detail);
+  }
 
-  return res.json({ message: 'Register' });
+  return res.sendStatus(201);
 }
 
 export default {

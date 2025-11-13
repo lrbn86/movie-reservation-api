@@ -1,9 +1,18 @@
+import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import authRepository from './auth.repository.js';
 
 async function createUser(user) {
-  if (!user?.email) throw new Error('Email is required');
-  if (!user?.password) throw new Error('Password is required');
+  const email = user?.email;
+  const password = user?.password;
+
+  if (!email || !password) {
+    throw new Error('Email and password are required');
+  }
+
+  if (!validator.isEmail(email)) {
+    throw new Error('Invalid email');
+  }
 
   const passwordHash = await bcrypt.hash(user.password, 10);
 
