@@ -7,7 +7,10 @@ const app = express();
 
 app.use(express.json());
 app.use(helmet());
-app.use(morgan('combined'));
+
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('combined'));
+}
 
 app.use('/api/auth', authRouter);
 
