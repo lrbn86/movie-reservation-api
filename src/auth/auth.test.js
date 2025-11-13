@@ -1,27 +1,24 @@
 import bcrypt from 'bcryptjs';
-import test from 'node:test';
+import { describe, it, beforeEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import crypto from 'node:crypto';
+import authRepository from './auth.repository.js';
 import authService from './auth.service.js';
 
-const id = crypto.randomUUID();
+describe('Auth Service Test', () => {
+  beforeEach(() => {
+    mock.method(bcrypt, 'hash', async () => 'fake-hash');
+    mock.method(authRepository, 'create', async (user) => ({ id: 'fixed-id-123', ...user }));
+  });
 
-const authRepositoryMock = {
-  create: async (user) => ({ id, ...user })
-}
-
-test('createUser hashes password and saves user', async () => {
-  const userData = { email: 'admin@email.com', password: 'admin' };
-
-  const user = await authService.createUser(authRepositoryMock, userData);
-
-  assert.ok(user.hasOwnProperty('id'));
-  assert.equal(user.id, id);
-
-  assert.ok(user.hasOwnProperty('email'));
-  assert.equal(user.email, 'admin@email.com');
-
-  assert.ok(user.hasOwnProperty('password'));
-  assert.notEqual(user.password, userData.password);
-  assert.ok(await bcrypt.compare(userData.password, user.password));
+  it('should register a user successfully', async () => {
+    const user = { email: 'admin@email.com', password: 'pass123' };
+    const result = await authService.createUser(user);
+    assert.equal(result.id, 'fixed-id-123');
+    assert.equal(result.email, user.email);
+    assert.equal(result.password, 'fake-hash');
+    assert.equal(bcrypt.hash.mock.calls[0].arguments[0], user.password);
+    assert.equal(bcrypt.hash.mock.calls[0].arguments[1], 10);
+    assert.equal(authRepository.create.mock.calls[0].arguments[0].email, user.email);
+    assert.equal(authRepository.create.mock.calls[0].arguments[0].password, 'fake-hash');
+  });
 });

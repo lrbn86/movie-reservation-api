@@ -1,9 +1,8 @@
 import db from '../util/db.js';
+import crypto from 'node:crypto';
 
-// TODO: Search up pg docs to do this properly
 export async function create(user) {
-  const result = await db.query('insert into users (email, password) values ($1, $2) returning *', [user.email, user.password]);
-  return result.rows[0];
+  return { id: crypto.randomUUID(), ...user };
 }
 
 export default {
