@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --watch .",
-    "test": "node --test"
+    "test": "NODE_ENV=test node --test"
   },
   "repository": {
     "type": "git",
