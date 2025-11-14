@@ -23,4 +23,13 @@ app.use(authenticate);
 app.use('/api/movies', movieRouter);
 app.use('/api/reservations', reservationRouter);
 
+app.use((req, res, next) => {
+  return res.sendStatus(404);
+});
+
+app.use((err, req, res, next) => {
+  console.log(err);
+  return res.sendStatus(500);
+});
+
 export default app;
