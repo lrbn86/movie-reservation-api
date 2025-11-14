@@ -7,14 +7,26 @@ import movieRouter from './src/movie/movie.router.js';
 import reservationRouter from './src/reservation/reservation.router.js';
 import authenticate from './src/middleware/authenticate.js';
 
+const NODE_ENV = process.env.NODE_ENV;
+console.log('Environment:', NODE_ENV);
+
 const app = express();
 
 app.use(express.json());
 app.use(helmet());
 
-if (process.env.NODE_ENV !== 'test') {
+if (NODE_ENV === 'production' || NODE_ENV === 'development') {
   app.use(morgan('combined'));
-  app.use(rateLimit());
+}
+
+if (NODE_ENV === 'production') {
+  app.use(rateLimit({
+    windowMs: 5 * 60 * 1000,
+    limit: 3,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+  }));
+  app.use(authenticate);
 }
 
 app.get('/health', (req, res) => {
@@ -22,8 +34,6 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
-
-app.use(authenticate);
 app.use('/api/movies', movieRouter);
 app.use('/api/reservations', reservationRouter);
 
