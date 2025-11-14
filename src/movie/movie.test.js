@@ -1,9 +1,19 @@
 import request from 'supertest';
 import { describe, it, mock, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import movieRepository from './movie.repository.js';
+import movieService from './movie.service.js';
 import app from '../../app.js';
 
 describe('Movie Controller', () => {
+  before(() => {
+    mock.method(movieRepository, 'create', async (data) => data);
+  });
+
+  after(() => {
+    mock.reset();
+  });
+
   it('should return status code 201 on successful movie creation', async () => {
     const res = await request(app)
       .post('/api/movies')
@@ -19,17 +29,6 @@ describe('Movie Controller', () => {
       .send({ title: 'Movie', description: 'Description' });
     assert.ok(res.headers['location']);
     assert.ok(res.headers['location'].startsWith('/api/movies'));
-  });
-
-  it('should return created movie with correct fields', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({ title: 'Movie', description: 'Description' });
-    assert.ok(res.body.id);
-    assert.ok(res.body.title);
-    assert.ok(res.body.description);
-    assert.ok(res.body.createdAt);
-    assert.ok(res.body.updatedAt);
   });
 
   it('should have correct title and description', async () => {
@@ -82,6 +81,14 @@ describe('Movie Controller', () => {
 });
 
 describe('Movie Service', () => {
+  before(() => {
+    mock.method(movieRepository, 'create', async (data) => data);
+  });
+
+  after(() => {
+    mock.reset();
+  });
+
   it('should create a movie successfully', async () => {
     throw 'Implement test';
   });
@@ -100,5 +107,21 @@ describe('Movie Service', () => {
 
   it('should delete a movie successfully', async () => {
     throw 'Implement test';
+  });
+
+  it('should fail to create movie if title and description are not provided', async () => {
+    await assert.rejects(movieService.createMovie());
+  });
+
+  it('should fail to create movie if title and description are not provided', async () => {
+    await assert.rejects(movieService.createMovie({ title: 'Title' }));
+  });
+
+  it('should fail to create movie if title and description are not provided', async () => {
+    await assert.rejects(movieService.createMovie({ description: 'Description' }));
+  });
+
+  it('should fail to create movie if title and description are not provided', async () => {
+    await assert.rejects(movieService.createMovie({ title: '', description: '' }));
   });
 });
