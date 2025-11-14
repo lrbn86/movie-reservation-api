@@ -6,12 +6,12 @@ async function addMovie(req, res) {
   const posterImageUrl = req.body?.posterImage;
 
   if (!title || !description) {
-    return res.status(400).json({ error: 'Title and description required' });
+    return res.status(400).json({ error: 'Title and description are required' });
   }
 
   const movie = await movieService.createMovie({ title, description, posterImageUrl });
 
-  res.setHeader('Location', `/api/movies/${movie.id}`);
+  res.location(`/api/movies/${movie.id}`);
 
   return res.status(201).json(movie);
 }
