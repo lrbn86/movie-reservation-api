@@ -1,7 +1,7 @@
 import db from '../util/db.js';
 
 export async function create(user) {
-  const result = await db.insert('users', { email: user.email, password: user.password });
+  const result = await db.insert('users', { email: user.email, password: user.password, role: 'user' });
   return result;
 }
 
