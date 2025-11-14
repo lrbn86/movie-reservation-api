@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --env-file=.prod.env --watch .",
-    "dev": "node --env-file=.test.env --watch .",
+    "dev": "node --env-file=.dev.env --watch .",
     "test": "NODE_ENV=test node --test"
   },
   "repository": {
@@ -27,6 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "pg": "^8.16.3",
+    "supertest": "^7.1.4",
     "validator": "^13.15.23"
   }
 }

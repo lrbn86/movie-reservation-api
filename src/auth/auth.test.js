@@ -1,13 +1,19 @@
+import request from 'supertest';
 import bcrypt from 'bcryptjs';
-import { describe, it, beforeEach, mock } from 'node:test';
+import { describe, it, before, after, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import authRepository from './auth.repository.js';
 import authService from './auth.service.js';
+import app from '../../app.js';
 
 describe('Auth Service Test', () => {
-  beforeEach(() => {
+  before(() => {
     mock.method(bcrypt, 'hash', async () => 'fake-hash');
     mock.method(authRepository, 'create', async (user) => ({ id: 'fixed-id-123', ...user }));
+  });
+
+  after(() => {
+    mock.reset();
   });
 
   it('should register a user successfully', async () => {
@@ -49,5 +55,48 @@ describe('Auth Service Test', () => {
     await assert.rejects(authService.createUser({ email: 'admin@email.com', password: null }));
     await assert.rejects(authService.createUser({ email: 'admin@email.com', password: '' }));
   });
+});
 
+describe('Auth Controller Test', () => {
+  before(() => {
+    mock.method(authService, 'createUser', async (user) => ({ id: 'fixed-id-123', ...user }));
+  });
+
+  after(() => {
+    mock.reset();
+  });
+
+  it('should return 201', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ email: 'admin@gmail.com', password: 'pass123' });
+    assert.equal(res.statusCode, 201);
+  });
+
+  it('should return 400 if email is not provided', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ password: 'pass123' });
+    assert.equal(res.statusCode, 400);
+  });
+
+  it('should return 400 if password is not provided', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ email: 'admin@gmail.com' });
+    assert.equal(res.statusCode, 400);
+  });
+
+  it('should return 400 if both email and password are not provided', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({});
+    assert.equal(res.statusCode, 400);
+  });
+
+  it('should return 400 if both email and password are not provided', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+    assert.equal(res.statusCode, 400);
+  });
 });
