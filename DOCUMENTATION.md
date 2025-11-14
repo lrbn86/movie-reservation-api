@@ -55,7 +55,8 @@ Add a movie
 | - | - | - |
 | title | The title of the movie | Yes |
 | description | The description of the movie | Yes |
-| genre | The genre of the movie | Yes |
+| genre | The genre of the movie | No |
+| poster_image | The poster image of the movie | No |
 
 ### GET /api/movies
 Get all the movies
@@ -67,6 +68,7 @@ Update a movie by a movieId
 | title | The new title of the movie | No |
 | description | The new description of the movie | No |
 | genre | The new genre of the movie | No |
+| poster_image | The poster image of the movie | No |
 
 ### DELETE /api/movies/:movieId
 Delete a movie by a movieId
