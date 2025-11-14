@@ -10,7 +10,7 @@ describe('Auth Service Test', () => {
   before(() => {
     mock.method(bcrypt, 'hash', async () => 'fake-hash');
     mock.method(bcrypt, 'compare', async () => true);
-    mock.method(authRepository, 'create', async (user) => ({ id: 'fixed-id-123', ...user }));
+    mock.method(authRepository, 'create', async (user) => ({ id: 'fixed-id-123', role: 'user', ...user }));
     mock.method(authRepository, 'findByEmail', async (user) => ({ id: 'fixed-id-123', ...user }));
   });
 
@@ -24,6 +24,7 @@ describe('Auth Service Test', () => {
     assert.equal(result.id, 'fixed-id-123');
     assert.equal(result.email, user.email);
     assert.equal(result.password, 'fake-hash');
+    assert.equal(result.role, 'user');
     assert.equal(bcrypt.hash.mock.calls[0].arguments[0], user.password);
     assert.equal(bcrypt.hash.mock.calls[0].arguments[1], 10);
     assert.equal(authRepository.create.mock.calls[0].arguments[0].email, user.email);
