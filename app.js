@@ -17,6 +17,10 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(rateLimit());
 }
 
+app.get('/health', (req, res) => {
+  return res.send('OK');
+});
+
 app.use('/api/auth', authRouter);
 
 app.use(authenticate);
