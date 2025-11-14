@@ -5,6 +5,7 @@ import { rateLimit } from 'express-rate-limit';
 import authRouter from './src/auth/auth.router.js';
 import movieRouter from './src/movie/movie.router.js';
 import reservationRouter from './src/reservation/reservation.router.js';
+import authenticate from './src/middleware/authenticate.js';
 
 const app = express();
 
@@ -17,6 +18,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.use('/api/auth', authRouter);
+
+app.use(authenticate);
 app.use('/api/movies', movieRouter);
 app.use('/api/reservations', reservationRouter);
 
