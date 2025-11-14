@@ -5,6 +5,12 @@ export async function create(user) {
   return result;
 }
 
+export async function findByEmail(user) {
+  const result = await db.findByEmail('users', { email: user.email });
+  return result;
+}
+
 export default {
-  create
+  create,
+  findByEmail
 };

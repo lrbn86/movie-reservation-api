@@ -9,7 +9,9 @@ import app from '../../app.js';
 describe('Auth Service Test', () => {
   before(() => {
     mock.method(bcrypt, 'hash', async () => 'fake-hash');
+    mock.method(bcrypt, 'compare', async () => true);
     mock.method(authRepository, 'create', async (user) => ({ id: 'fixed-id-123', ...user }));
+    mock.method(authRepository, 'findByEmail', async (user) => ({ id: 'fixed-id-123', ...user }));
   });
 
   after(() => {
@@ -54,6 +56,18 @@ describe('Auth Service Test', () => {
     await assert.rejects(authService.createUser({ email: 'admin@email.com' }));
     await assert.rejects(authService.createUser({ email: 'admin@email.com', password: null }));
     await assert.rejects(authService.createUser({ email: 'admin@email.com', password: '' }));
+  });
+
+  it('should login a user successfully', async () => {
+    const user = { email: 'admin@email.com', password: 'pass123' };
+    const token = await authService.getToken(user);
+    assert.equal(token, 'fake-token');
+  });
+
+  it('should not login a user if the password is wrong', async () => {
+    bcrypt.compare.mock.mockImplementationOnce(async () => false);
+    const user = { email: 'admin@email.com', password: 'pass123' };
+    await assert.rejects(authService.getToken(user));
   });
 });
 

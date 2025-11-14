@@ -22,6 +22,14 @@ async function insert(tableName, data, returning = ['*']) {
   return result.rows[0];
 }
 
+async function findByEmail(tableName, data) {
+  const sql = `
+    SELECT * FROM ${tableName} WHERE email=$1
+  `;
+  const result = await pool.query(sql, [data.email]);
+  return result.rows[0];
+}
+
 async function createUserTable() {
   const sql = `
     CREATE TABLE IF NOT EXISTS users (
@@ -50,6 +58,7 @@ async function testConnection() {
 
 export default {
   insert,
+  findByEmail,
   createUserTable,
   testConnection,
 };
