@@ -1,7 +1,12 @@
 import movieRepository from './movie.repository.js';
 
 async function createMovie(movieData) {
+  if (!movieData?.title || !movieData?.description) {
+    throw new Error('Title and description are required');
+  }
+
   const movie = await movieRepository.create(movieData);
+
   return movie;
 }
 
