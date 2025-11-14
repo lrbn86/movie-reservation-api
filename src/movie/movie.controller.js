@@ -1,14 +1,19 @@
+import movieService from './movie.service.js';
+
 async function addMovie(req, res) {
   const title = req.body?.title;
   const description = req.body?.description;
-  const genre = req.body?.genre || '';
-  const posterImage = req.body?.posterImage || '';
+  const posterImageUrl = req.body?.posterImage || '';
 
   if (!title || !description) {
     return res.status(400).json({ error: 'Title and description required' });
   }
 
-  return res.status(201).json({ message: 'Created movie' });
+  const movie = await movieService.createMovie({ title, description, posterImageUrl });
+
+  res.setHeader('Location', `/api/movies/${movie.id}`);
+
+  return res.status(201).json(movie);
 }
 
 async function getMovies(req, res) {
