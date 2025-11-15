@@ -7,7 +7,7 @@ import app from '../../app.js';
 
 describe('Movie Controller', () => {
   before(() => {
-    mock.method(movieRepository, 'create', async (data) => data);
+    mock.method(movieRepository, 'create', async (data) => ({ id: 'id', ...data }));
   });
 
   after(() => {
@@ -37,6 +37,15 @@ describe('Movie Controller', () => {
       .send({ title: 'Movie', description: 'Description' });
     assert.equal(res.body.title, 'Movie');
     assert.equal(res.body.description, 'Description');
+  });
+
+  it('should call the movieService.createMovie', async (t) => {
+    mock.method(movieService, 'createMovie', async (data) => ({ id: 'id', ...data }));
+    await request(app)
+      .post('/api/movies')
+      .send({ title: 'Movie', description: 'Description' });
+    assert.equal(movieService.createMovie.mock.callCount(), 1);
+    mock.reset();
   });
 
   it('should return status code 400 if both title and description are not provided', async () => {
@@ -89,8 +98,9 @@ describe('Movie Service', () => {
     mock.reset();
   });
 
-  it('should create a movie successfully', async () => {
-    throw 'Implement test';
+  it('should call the movieRepository.create', async () => {
+    await movieService.createMovie({ title: 'Movie', description: 'Description' });
+    assert.equal(movieRepository.create.mock.callCount(), 1);
   });
 
   it('should get all movies successfully', async () => {
