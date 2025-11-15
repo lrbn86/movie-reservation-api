@@ -8,7 +8,6 @@ import reservationRouter from './src/reservation/reservation.router.js';
 import authenticate from './src/middleware/authenticate.js';
 
 const NODE_ENV = process.env.NODE_ENV;
-console.log('Environment:', NODE_ENV);
 
 const app = express();
 
