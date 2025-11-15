@@ -5,9 +5,8 @@ async function register(req, res) {
   const password = req.body?.password;
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
+    return res.status(400).json({ error: 'Both email and password are required' });
   }
-
   const user = { email, password };
 
   try {
@@ -29,7 +28,7 @@ async function login(req, res) {
   const password = req.body?.password;
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
+    return res.status(400).json({ error: 'Both email and password are required' });
   }
 
   const user = { email, password }
