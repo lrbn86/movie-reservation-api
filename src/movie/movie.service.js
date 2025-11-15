@@ -15,6 +15,11 @@ async function getMovies() {
   return movies;
 }
 
+async function getMovie(id) {
+  const movie = await movieRepository.getById(id);
+  return movie;
+}
+
 async function filterMovies() {
 }
 
@@ -25,4 +30,5 @@ async function removeMovie() {
 export default {
   createMovie,
   getMovies,
+  getMovie,
 };

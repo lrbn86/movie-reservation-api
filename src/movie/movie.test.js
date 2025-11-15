@@ -50,6 +50,13 @@ describe('Movie Controller', () => {
     assert.equal(movieService.getMovies.mock.callCount(), 1);
   });
 
+  it('should call the movieService.getMovie', async (t) => {
+    t.mock.method(movieService, 'getMovie', async (id) => { });
+    await request(app)
+      .get('/api/movies/movieId');
+    assert.equal(movieService.getMovie.mock.callCount(), 1);
+  });
+
   it('should return status code 400 if both title and description are not provided', async () => {
     const res = await request(app)
       .post('/api/movies')
@@ -118,8 +125,14 @@ describe('Movie Service', () => {
     ]);
   });
 
-  it('should get a movie successfully', async () => {
-    throw 'Implement test';
+  it('should get a movie successfully', async (t) => {
+    t.mock.method(movieService, 'getMovie', async (id) => {
+      const movies = await movieService.getMovies();
+      return movies[0];
+    });
+    await movieService.createMovie({ title: 'Movie #1', description: 'Description #1' });
+    const movie = await movieService.getMovie('movie-id');
+    assert.deepEqual(movie, { title: 'Movie #1', description: 'Description #1' });
   });
 
   it('should update a movie successfully', async () => {

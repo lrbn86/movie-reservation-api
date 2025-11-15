@@ -16,7 +16,12 @@ async function getAll() {
   return [];
 }
 
+async function getById(id) {
+  return null;
+}
+
 export default {
   create,
   getAll,
+  getById,
 };
