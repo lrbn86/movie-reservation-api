@@ -13,7 +13,12 @@ async function register(req, res) {
   try {
     await authService.createUser(user);
   } catch (err) {
-    return res.status(409).json({ error: err.detail });
+    if (err.message === 'Invalid email') {
+      return res.status(400).json({ error: err.message })
+    }
+    if (err.message === 'Email already registered') {
+      return res.status(409).json({ error: err.message });
+    }
   }
 
   return res.sendStatus(201);
