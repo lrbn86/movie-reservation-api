@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { describe, it, mock, beforeEach, afterEach } from 'node:test';
+import { describe, it, mock, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import movieRepository from './movie.repository.js';
 import movieService from './movie.service.js';
@@ -8,10 +8,6 @@ import app from '../../app.js';
 describe('Movie Controller', () => {
   beforeEach(() => {
     mock.method(movieRepository, 'create', async (data) => ({ id: 'id', ...data }));
-  });
-
-  afterEach(() => {
-    mock.reset();
   });
 
   it('should return status code 201 on successful movie creation', async () => {
@@ -40,12 +36,18 @@ describe('Movie Controller', () => {
   });
 
   it('should call the movieService.createMovie', async (t) => {
-    mock.method(movieService, 'createMovie', async (data) => ({ id: 'id', ...data }));
+    t.mock.method(movieService, 'createMovie', async (data) => ({ id: 'id', ...data }));
     await request(app)
       .post('/api/movies')
       .send({ title: 'Movie', description: 'Description' });
     assert.equal(movieService.createMovie.mock.callCount(), 1);
-    mock.reset();
+  });
+
+  it('should call the movieService.getMovies', async (t) => {
+    t.mock.method(movieService, 'getMovies', async () => { });
+    await request(app)
+      .get('/api/movies');
+    assert.equal(movieService.getMovies.mock.callCount(), 1);
   });
 
   it('should return status code 400 if both title and description are not provided', async () => {
@@ -96,10 +98,6 @@ describe('Movie Service', () => {
       movies.push(data);
     });
     mock.method(movieRepository, 'getAll', async () => movies);
-  });
-
-  afterEach(() => {
-    mock.reset();
   });
 
   it('should call the movieRepository.create', async () => {

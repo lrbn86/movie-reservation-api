@@ -17,7 +17,8 @@ async function addMovie(req, res) {
 }
 
 async function getMovies(req, res) {
-  return res.status(200).json({ message: 'Heres all the movies' });
+  const movies = await movieService.getMovies();
+  return res.status(200).json(movies);
 }
 
 async function getMovie(req, res) {

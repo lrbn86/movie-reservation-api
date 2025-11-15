@@ -13,7 +13,7 @@ async function create(data) {
 }
 
 async function getAll() {
-
+  return [];
 }
 
 export default {
