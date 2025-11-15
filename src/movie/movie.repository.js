@@ -12,6 +12,11 @@ async function create(data) {
   return movie;
 }
 
+async function getAll() {
+
+}
+
 export default {
   create,
+  getAll,
 };

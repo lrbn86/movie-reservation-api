@@ -1,16 +1,16 @@
 import request from 'supertest';
-import { describe, it, mock, before, after } from 'node:test';
+import { describe, it, mock, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import movieRepository from './movie.repository.js';
 import movieService from './movie.service.js';
 import app from '../../app.js';
 
 describe('Movie Controller', () => {
-  before(() => {
+  beforeEach(() => {
     mock.method(movieRepository, 'create', async (data) => ({ id: 'id', ...data }));
   });
 
-  after(() => {
+  afterEach(() => {
     mock.reset();
   });
 
@@ -90,11 +90,15 @@ describe('Movie Controller', () => {
 });
 
 describe('Movie Service', () => {
-  before(() => {
-    mock.method(movieRepository, 'create', async (data) => data);
+  beforeEach(() => {
+    const movies = [];
+    mock.method(movieRepository, 'create', async (data) => {
+      movies.push(data);
+    });
+    mock.method(movieRepository, 'getAll', async () => movies);
   });
 
-  after(() => {
+  afterEach(() => {
     mock.reset();
   });
 
@@ -104,7 +108,16 @@ describe('Movie Service', () => {
   });
 
   it('should get all movies successfully', async () => {
-    throw 'Implement test';
+    await movieService.createMovie({ title: 'Movie #1', description: 'Description #1' });
+    await movieService.createMovie({ title: 'Movie #2', description: 'Description #2' });
+    await movieService.createMovie({ title: 'Movie #3', description: 'Description #3' });
+    const movies = await movieService.getMovies();
+    assert.equal(movies.length, 3);
+    assert.deepEqual(movies, [
+      { title: 'Movie #1', description: 'Description #1' },
+      { title: 'Movie #2', description: 'Description #2' },
+      { title: 'Movie #3', description: 'Description #3' },
+    ]);
   });
 
   it('should get a movie successfully', async () => {

@@ -10,6 +10,11 @@ async function createMovie(movieData) {
   return movie;
 }
 
+async function getMovies() {
+  const movies = await movieRepository.getAll();
+  return movies;
+}
+
 async function filterMovies() {
 }
 
@@ -19,4 +24,5 @@ async function removeMovie() {
 
 export default {
   createMovie,
+  getMovies,
 };
