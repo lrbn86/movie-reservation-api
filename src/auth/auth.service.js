@@ -8,7 +8,7 @@ async function createUser(userData) {
   const password = userData?.password;
 
   if (!email || !password) {
-    throw new Error('Email and password are required');
+    throw new Error('Both email and password are required');
   }
 
   if (!validator.isEmail(email)) {
@@ -26,7 +26,7 @@ async function getToken(user) {
   const password = user?.password;
 
   if (!email || !password) {
-    throw new Error('Email are password are required');
+    throw new Error('Email and password are required');
   }
 
   const userFound = await authRepository.findByEmail(user);
