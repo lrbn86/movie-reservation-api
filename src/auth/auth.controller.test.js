@@ -1,16 +1,11 @@
 import request from 'supertest';
-import { describe, it, beforeEach, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import app from '../../app.js';
-import authRepository from './auth.repository.js';
 import authService from './auth.service.js';
 
 describe('Auth Controller Test', () => {
   describe('authController.register', () => {
-    beforeEach(() => {
-      mock.method(authService, 'createUser', async () => { });
-    });
-
     it('should return 400 if both email and password are not provided', async () => {
       const res = await request(app)
         .post('/api/auth/register')
@@ -39,6 +34,7 @@ describe('Auth Controller Test', () => {
     });
 
     it('should call authService.createUser', async (t) => {
+      t.mock.method(authService, 'createUser', async () => { });
       await request(app)
         .post('/api/auth/register')
         .send({ email: 'admin@gmail.com', password: 'pass123' });
@@ -82,10 +78,6 @@ describe('Auth Controller Test', () => {
   });
 
   describe('authController.login', async () => {
-    beforeEach(() => {
-      mock.method(authService, 'getToken', async () => { });
-    });
-
     it('should return 400 if both email and password are not provided', async () => {
       const res = await request(app)
         .post('/api/auth/login')
@@ -113,7 +105,8 @@ describe('Auth Controller Test', () => {
       assert.equal(res.body.error, 'Both email and password are required')
     });
 
-    it('should call authService.getToken', async () => {
+    it('should call authService.getToken', async (t) => {
+      t.mock.method(authService, 'getToken', async () => { });
       await request(app)
         .post('/api/auth/login')
         .send({ email: 'admin@email.com', password: 'pass123' });

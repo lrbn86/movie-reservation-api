@@ -1,17 +1,13 @@
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { describe, it, beforeEach, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import authRepository from './auth.repository.js';
 import authService from './auth.service.js';
 
 describe('Auth Service Test', () => {
   describe('authService.createUser', () => {
-    beforeEach(() => {
-      mock.method(authRepository, 'create', async () => { });
-    });
-
     it('should throw an error if both email and password are not provided', async () => {
       await assert.rejects(async () => await authService.createUser(), Error('Both email and password are required'));
       await assert.rejects(async () => await authService.createUser({ email: 'admin@email.com' }), Error('Both email and password are required'));
@@ -27,6 +23,7 @@ describe('Auth Service Test', () => {
 
     it('should call bcrypt.hash', async (t) => {
       t.mock.method(bcrypt, 'hash', async () => { });
+      t.mock.method(authRepository, 'create', async () => { });
 
       await authService.createUser({ email: 'admin@email.com', password: 'pass123' });
 
