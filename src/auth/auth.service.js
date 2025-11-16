@@ -26,7 +26,7 @@ async function getToken(user) {
   const password = user?.password;
 
   if (!email || !password) {
-    throw new Error('Email and password are required');
+    throw new Error('Both email and password are required');
   }
 
   const userFound = await authRepository.findByEmail(user);
@@ -41,11 +41,12 @@ async function getToken(user) {
     throw new Error('Wrong password');
   }
 
-  return 'fake-token';
+  return generateAccessToken(userFound);
 }
 
 async function generateAccessToken(payload) {
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5m' });
+  const { password, ...user } = payload;
+  const token = jwt.sign(user, process.env.JWT_SECRET || 'secretkey', { expiresIn: '5m' });
   return token;
 }
 
