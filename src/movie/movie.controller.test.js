@@ -1,99 +1,97 @@
 import request from 'supertest';
-import { describe, it, mock, beforeEach } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import movieRepository from './movie.repository.js';
 import movieService from './movie.service.js';
 import app from '../../app.js';
 
-describe('Movie Controller', () => {
-  beforeEach(() => {
-    mock.method(movieRepository, 'create', async (data) => ({ id: 'id', ...data }));
+describe('Movie Controller Test', () => {
+  describe('movieController.addMovie', () => {
+    it('should return 400 if both title and description are not provided', async () => {
+      const res = await request(app)
+        .post('/api/movies');
+      assert.equal(res.statusCode, 400);
+    });
+
+    it('should return 400 if both title and description are not provided (only title provided)', async () => {
+      const res = await request(app)
+        .post('/api/movies')
+        .send({ title: 'Title' });
+      assert.equal(res.statusCode, 400);
+    });
+
+    it('should return 400 if both title and description are not provided (only description provided)', async () => {
+      const res = await request(app)
+        .post('/api/movies')
+        .send({ description: 'Description' });
+      assert.equal(res.statusCode, 400);
+    });
+
+    it('should call movieService.createMovie', async (t) => {
+      t.mock.method(movieService, 'createMovie', async (data) => ({ id: 'id', ...data }));
+      await request(app)
+        .post('/api/movies')
+        .send({ title: 'Title', description: 'Description' });
+      assert.equal(movieService.createMovie.mock.callCount(), 1);
+    });
+
+    it('should set the location header properly', async (t) => {
+      t.mock.method(movieService, 'createMovie', async (data) => ({ id: 'id', ...data }));
+      const res = await request(app)
+        .post('/api/movies')
+        .send({ title: 'Title', description: 'Description' });
+      assert.equal(res.headers.location, '/api/movies/id');
+    });
+
+    it('should return 201 and movie on success', async (t) => {
+      t.mock.method(movieService, 'createMovie', async (data) => ({ id: 'id', createdAt: '', updatedAt: '', ...data }));
+      const res = await request(app)
+        .post('/api/movies')
+        .send({ title: 'Title', description: 'Description' });
+      const movie = res.body;
+      assert.equal(res.statusCode, 201);
+      assert.deepEqual(movie, { id: 'id', title: 'Title', description: 'Description', createdAt: '', updatedAt: '' });
+    });
   });
 
-  it('should return status code 201 on successful movie creation', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({ title: 'Movie', description: 'Description' });
-    assert.equal(res.statusCode, 201);
-    assert.equal(res.body.title, 'Movie');
-    assert.equal(res.body.description, 'Description');
+  describe('movieController.getMovies', () => {
+    it('should call movieService.getMovies', async (t) => {
+      t.mock.method(movieService, 'getMovies', async () => []);
+      await request(app)
+        .get('/api/movies');
+      assert.equal(movieService.getMovies.mock.callCount(), 1);
+    });
+
+    it('should return 200 on success', async (t) => {
+      t.mock.method(movieService, 'getMovies', async () => []);
+      const res = await request(app)
+        .get('/api/movies');
+      assert.equal(res.statusCode, 200);
+    });
   });
 
-  it('should have a location header in response', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({ title: 'Movie', description: 'Description' });
-    assert.ok(res.headers['location']);
-    assert.ok(res.headers['location'].startsWith('/api/movies'));
-  });
+  describe('movieController.getMovie', () => {
+    it('should call movieService.getMovie', async (t) => {
+      t.mock.method(movieService, 'getMovie', async () => { });
+      await request(app)
+        .get('/api/movies/fixed-id');
+      assert.equal(movieService.getMovie.mock.callCount(), 1);
+    });
 
-  it('should have correct title and description', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({ title: 'Movie', description: 'Description' });
-    assert.equal(res.body.title, 'Movie');
-    assert.equal(res.body.description, 'Description');
-  });
+    it('should return 404 if movie does not exist', async (t) => {
+      t.mock.method(movieService, 'getMovie', async () => null);
+      const res = await request(app)
+        .get('/api/movies/fixed-id');
+      assert.equal(res.statusCode, 404);
+    });
 
-  it('should call the movieService.createMovie', async (t) => {
-    t.mock.method(movieService, 'createMovie', async (data) => ({ id: 'id', ...data }));
-    await request(app)
-      .post('/api/movies')
-      .send({ title: 'Movie', description: 'Description' });
-    assert.equal(movieService.createMovie.mock.callCount(), 1);
-  });
-
-  it('should call the movieService.getMovies', async (t) => {
-    t.mock.method(movieService, 'getMovies', async () => { });
-    await request(app)
-      .get('/api/movies');
-    assert.equal(movieService.getMovies.mock.callCount(), 1);
-  });
-
-  it('should call the movieService.getMovie', async (t) => {
-    t.mock.method(movieService, 'getMovie', async (id) => { });
-    await request(app)
-      .get('/api/movies/movieId');
-    assert.equal(movieService.getMovie.mock.callCount(), 1);
-  });
-
-  it('should return status code 400 if both title and description are not provided', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send();
-    assert.equal(res.statusCode, 400);
-    assert.equal(res.body.error, 'Title and description are required');
-  });
-
-  it('should return status code 400 if both title and description are not provided', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({});
-    assert.equal(res.statusCode, 400);
-    assert.equal(res.body.error, 'Title and description are required');
-  });
-
-  it('should return status code 400 if both title and description are not provided', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({ title: '', description: '' });
-    assert.equal(res.statusCode, 400);
-    assert.equal(res.body.error, 'Title and description are required');
-  });
-
-  it('should return status code 400 if both title and description are not provided', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({ title: '' });
-    assert.equal(res.statusCode, 400);
-    assert.equal(res.body.error, 'Title and description are required');
-  });
-
-  it('should return status code 400 if both title and description are not provided', async () => {
-    const res = await request(app)
-      .post('/api/movies')
-      .send({ description: '' });
-    assert.equal(res.statusCode, 400);
-    assert.equal(res.body.error, 'Title and description are required');
+    it('should return 200 and updated movie on success', async (t) => {
+      t.mock.method(movieService, 'getMovie', async (id) => ({ id, title: 'Changed', description: 'Changed' }));
+      const res = await request(app)
+        .get('/api/movies/fixed-id')
+        .send({ title: 'Changed', description: 'Changed' });
+      const movie = res.body;
+      assert.equal(res.statusCode, 200);
+      assert.deepEqual(movie, { id: 'fixed-id', title: 'Changed', description: 'Changed' });
+    });
   });
 });

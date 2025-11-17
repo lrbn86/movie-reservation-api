@@ -23,9 +23,6 @@ async function getMovies(req, res) {
 
 async function getMovie(req, res) {
   const movieId = req.params?.movieId;
-  if (!movieId) {
-    return res.status(400).json({ error: 'Id required' });
-  }
 
   const movie = await movieService.getMovie(movieId);
 
