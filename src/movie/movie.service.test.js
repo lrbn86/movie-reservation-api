@@ -6,7 +6,7 @@ import movieService from './movie.service.js';
 describe('Movie Service Test', () => {
   describe('movieService.createMovie', async (t) => {
     it('should throw an error if both title and description are not provided', async () => {
-      await assert.rejects(async () => await movieService.createMovie(), Error('title and description are required'));
+      await assert.rejects(async () => await movieService.createMovie(), Error('Title and description are required'));
     });
 
   });
