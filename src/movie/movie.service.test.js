@@ -8,6 +8,10 @@ describe('Movie Service Test', () => {
     it('should throw an error if both title and description are not provided', async () => {
       await assert.rejects(async () => await movieService.createMovie(), Error('title and description are required'));
     });
+
+    it('should throw an error if both title and description are not provided', async () => {
+      await assert.rejects(async () => await movieService.createMovie(), Error('title and description are required'));
+    });
   });
 
 
