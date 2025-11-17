@@ -83,15 +83,81 @@ describe('Movie Controller Test', () => {
         .get('/api/movies/fixed-id');
       assert.equal(res.statusCode, 404);
     });
+  });
+
+  describe('movieController.updateMovie', () => {
+    it('should return 404 if movie to be updated does not exist', async (t) => {
+      t.mock.method(movieService, 'updateMovie', async () => null);
+
+      const res = await request(app)
+        .put('/api/movies/fixed-id')
+        .send({ title: 'Changed', description: 'Changed' });
+
+      assert(res.statusCode, 404);
+    });
+
+    it('should call movieService.updateMovie', async (t) => {
+      t.mock.method(movieService, 'updateMovie', async () => { });
+
+      await request(app)
+        .put('/api/movies/fixed-id')
+        .send({ title: 'Changed', description: 'Changed' });
+
+      assert.equal(movieService.updateMovie.mock.callCount(), 1);
+    });
 
     it('should return 200 and updated movie on success', async (t) => {
       t.mock.method(movieService, 'getMovie', async (id) => ({ id, title: 'Changed', description: 'Changed' }));
+
       const res = await request(app)
         .get('/api/movies/fixed-id')
         .send({ title: 'Changed', description: 'Changed' });
+
       const movie = res.body;
+
       assert.equal(res.statusCode, 200);
       assert.deepEqual(movie, { id: 'fixed-id', title: 'Changed', description: 'Changed' });
+    });
+  });
+
+  describe('movieController.deleteMovie', (t) => {
+    it('should return 404 if movie to be deleted does not exist', async (t) => {
+      t.mock.method(movieService, 'getMovie', async () => null);
+      t.mock.method(movieService, 'deleteMovie', async () => { });
+
+      const res = await request(app)
+        .delete('/api/movies/fixed-id');
+
+      assert.equal(res.statusCode, 404);
+    });
+
+    it('should call movieService.getMovie', async (t) => {
+      t.mock.method(movieService, 'getMovie', async () => { });
+
+      await request(app)
+        .delete('/api/movies/fixed-id');
+
+      assert.equal(movieService.getMovie.mock.callCount(), 1);
+    });
+
+    it('should call movieService.deleteMovie', async (t) => {
+      t.mock.method(movieService, 'getMovie', async (user) => user);
+      t.mock.method(movieService, 'deleteMovie', async () => { });
+
+      await request(app)
+        .delete('/api/movies/fixed-id');
+
+      assert.equal(movieService.deleteMovie.mock.callCount(), 1);
+    });
+
+    it('should return 204 on successful deletion', async (t) => {
+      t.mock.method(movieService, 'getMovie', async (user) => user);
+      t.mock.method(movieService, 'deleteMovie', async () => { });
+
+      const res = await request(app)
+        .delete('/api/movies/fixed-id');
+
+      assert.equal(res.statusCode, 204);
     });
   });
 });

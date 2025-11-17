@@ -23,7 +23,6 @@ async function getMovies(req, res) {
 
 async function getMovie(req, res) {
   const movieId = req.params?.movieId;
-
   const movie = await movieService.getMovie(movieId);
 
   if (!movie) {
@@ -35,18 +34,18 @@ async function getMovie(req, res) {
 
 async function updateMovie(req, res) {
   const movieId = req.params?.movieId;
-  if (!movieId) {
-    return res.status(400).json({ error: 'Id required' });
-  }
+  await movieService.updateMovie(movieId, req.body);
   return res.status(200).json({ message: `Update movie ${movieId}` });
 }
 
 async function deleteMovie(req, res) {
   const movieId = req.params?.movieId;
-  if (!movieId) {
-    return res.status(400).json({ error: 'Id required' });
+  const movie = await movieService.getMovie(movieId);
+  if (!movie) {
+    return res.status(404).json({ error: 'Movie does not exist' });
   }
-  return res.status(200).json({ message: `Delete movie ${movieId}` });
+  await movieService.deleteMovie(movieId);
+  return res.sendStatus(204);
 }
 
 export default {
