@@ -20,15 +20,16 @@ async function getMovie(id) {
   return movie;
 }
 
-async function filterMovies() {
+async function updateMovie(id, data) {
 }
 
-async function removeMovie() {
-
+async function deleteMovie() {
 }
 
 export default {
   createMovie,
   getMovies,
   getMovie,
+  updateMovie,
+  deleteMovie,
 };
