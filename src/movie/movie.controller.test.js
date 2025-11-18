@@ -120,7 +120,7 @@ describe('Movie Controller Test', () => {
     });
   });
 
-  describe('movieController.deleteMovie', (t) => {
+  describe('movieController.deleteMovie', () => {
     it('should return 404 if movie to be deleted does not exist', async (t) => {
       t.mock.method(movieService, 'getMovie', async () => null);
       t.mock.method(movieService, 'deleteMovie', async () => { });
