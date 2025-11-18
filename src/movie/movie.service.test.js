@@ -31,19 +31,80 @@ describe('Movie Service Test', () => {
   });
 
 
-  describe('movieService.getMovies', async (t) => {
+  describe('movieService.getMovies', async () => {
+    it('should call movieRepository.getAll', async (t) => {
+      t.mock.method(movieRepository, 'getAll', async () => []);
+      await movieService.getMovies();
+      assert.equal(movieRepository.getAll.mock.callCount(), 1);
+    });
 
+    it('should return an array of movies', async (t) => {
+      const data = [
+        { title: 'Movie #1', description: 'Description #1' },
+        { title: 'Movie #2', description: 'Description #2' },
+        { title: 'Movie #3', description: 'Description #3' },
+      ];
+      t.mock.method(movieRepository, 'getAll', async () => data);
+
+      const movies = await movieService.getMovies();
+      assert.deepEqual(movies, data);
+    });
+
+    it('should return an empty array if there are no movies', async (t) => {
+      t.mock.method(movieRepository, 'getAll', async () => []);
+      const movies = await movieService.getMovies();
+      assert.deepEqual(movies, []);
+    });
+
+    it('should throw an error if movieRepository.getAll fails', async (t) => {
+      t.mock.method(movieRepository, 'getAll', async () => { throw new Error('Could not get data') });
+      await assert.rejects(async () => await movieService.getMovies(), Error('Could not get data'));
+    });
   });
 
-  describe('movieService.getMovie', async (t) => {
+  describe('movieService.getMovie', async () => {
+    it('should call movieRepository.getById', async (t) => {
+      t.mock.method(movieRepository, 'getById', async () => { });
 
+      await movieService.getMovie('fixed-id');
+
+      assert.equal(movieRepository.getById.mock.callCount(), 1);
+    });
+
+    it('should return a movie object', async (t) => {
+      t.mock.method(movieRepository, 'getById', async () => ({}));
+
+      const movie = await movieService.getMovie('fixed-id');
+
+      assert.deepEqual(movie, {});
+    });
   });
 
-  describe('movieService.updateMovie', async (t) => {
+  describe('movieService.updateMovie', async () => {
+    it('should call movieRepository.update', async (t) => {
+      t.mock.method(movieRepository, 'update', async () => { });
 
+      await movieService.updateMovie('fixed-id', {});
+
+      assert.equal(movieRepository.update.mock.callCount(), 1);
+    });
+
+    it('should return a movie object', async (t) => {
+      t.mock.method(movieRepository, 'update', async () => ({}));
+
+      const movie = await movieService.updateMovie('fixed-id', {});
+
+      assert.deepEqual(movie, {});
+    });
   });
 
-  describe('movieService.deleteMovie', async (t) => {
+  describe('movieService.deleteMovie', async () => {
+    it('should call movieRepository.remove', async (t) => {
+      t.mock.method(movieRepository, 'remove', async () => { });
 
+      await movieService.deleteMovie('fixed-id');
+
+      assert.equal(movieRepository.remove.mock.callCount(), 1);
+    });
   });
 });

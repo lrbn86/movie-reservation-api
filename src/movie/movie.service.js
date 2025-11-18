@@ -21,9 +21,12 @@ async function getMovie(id) {
 }
 
 async function updateMovie(id, data) {
+  const movie = await movieRepository.update(id, data);
+  return movie;
 }
 
-async function deleteMovie() {
+async function deleteMovie(id) {
+  await movieRepository.remove(id);
 }
 
 export default {
