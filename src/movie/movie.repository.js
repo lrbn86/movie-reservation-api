@@ -20,8 +20,18 @@ async function getById(id) {
   return null;
 }
 
+async function update(id, data) {
+  return null;
+}
+
+async function remove(id) {
+
+}
+
 export default {
   create,
   getAll,
   getById,
+  update,
+  remove,
 };
