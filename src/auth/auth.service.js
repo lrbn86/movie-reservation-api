@@ -4,15 +4,11 @@ import bcrypt from 'bcryptjs';
 import authRepository from './auth.repository.js';
 
 async function createUser(userData) {
-  const email = userData?.email;
-  const password = userData?.password;
-
-  if (!email || !password) {
-    throw new Error('Both email and password are required');
-  }
+  const email = typeof userData?.email === 'string' ? userData.email.trim().toLowerCase() : '';
+  const password = typeof userData?.password === 'string' ? userData.password : '';
 
   if (!validator.isEmail(email)) {
-    throw new Error('Invalid email');
+    throw new Error('Invalid email format');
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
@@ -21,27 +17,21 @@ async function createUser(userData) {
   return user;
 }
 
-async function getToken(user) {
-  const email = user?.email;
-  const password = user?.password;
+async function getToken(user, tokenGenerator = generateAccessToken) {
+  const email = typeof user?.email === 'string' ? user.email.trim().toLowerCase() : '';
+  const password = typeof user?.password === 'string' ? user.password : '';
 
-  if (!email || !password) {
-    throw new Error('Both email and password are required');
+  const fakeHash = '$2b$10$e0UDJZA3sTikAXoqWnvjJu.aA2ZNV8lC7skFO5CBt2csDZP5To1oq';
+  const userFound = await authRepository.findByEmail(email);
+  const passwordMatch = await bcrypt.compare(password, userFound?.password ?? fakeHash);
+
+  if (!validator.isEmail(email) || !userFound || !passwordMatch) {
+    throw new Error('Email and password are invalid');
   }
 
-  const userFound = await authRepository.findByEmail(user);
+  const token = tokenGenerator(userFound);
 
-  if (!userFound) {
-    throw new Error('User not found');
-  }
-
-  const passwordMatch = await bcrypt.compare(password, userFound.password);
-
-  if (!passwordMatch) {
-    throw new Error('Wrong password');
-  }
-
-  return generateAccessToken(userFound);
+  return token;
 }
 
 async function generateAccessToken(payload) {

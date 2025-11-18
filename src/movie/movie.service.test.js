@@ -30,7 +30,6 @@ describe('Movie Service Test', () => {
     });
   });
 
-
   describe('movieService.getMovies', async () => {
     it('should call movieRepository.getAll', async (t) => {
       t.mock.method(movieRepository, 'getAll', async () => []);

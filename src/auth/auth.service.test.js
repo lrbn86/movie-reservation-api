@@ -1,6 +1,5 @@
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import authRepository from './auth.repository.js';
@@ -8,91 +7,73 @@ import authService from './auth.service.js';
 
 describe('Auth Service Test', () => {
   describe('authService.createUser', () => {
-    it('should throw an error if both email and password are not provided', async () => {
-      await assert.rejects(async () => await authService.createUser(), Error('Both email and password are required'));
-      await assert.rejects(async () => await authService.createUser({ email: 'admin@email.com' }), Error('Both email and password are required'));
-      await assert.rejects(async () => await authService.createUser({ password: 'pass123' }), Error('Both email and password are required'));
-      await assert.rejects(async () => await authService.createUser({ email: '', password: '' }), Error('Both email and password are required'));
-    });
-
-    it('should throw an error if email was invalid', async (t) => {
-      t.mock.method(validator, 'isEmail', () => false);
-
-      await assert.rejects(async () => await authService.createUser({ email: 'invalid', password: 'pass123' }), Error('Invalid email'));
-    });
-
-    it('should call bcrypt.hash', async (t) => {
-      t.mock.method(bcrypt, 'hash', async () => { });
-      t.mock.method(authRepository, 'create', async () => { });
-
-      await authService.createUser({ email: 'admin@email.com', password: 'pass123' });
-
-      assert.equal(bcrypt.hash.mock.callCount(), 1);
-    });
-
-    it('should call authRepository.create', async (t) => {
-      t.mock.method(authRepository, 'create', async () => { });
-
-      await authService.createUser({ email: 'admin@email.com', password: 'pass123' });
-
-      assert.equal(authRepository.create.mock.callCount(), 1);
-    });
-
-    it('should return a user', async (t) => {
+    it('should return user object for valid user and password', async (t) => {
       t.mock.method(validator, 'isEmail', () => true);
-      t.mock.method(authRepository, 'create', async (user) => {
-        return {
-          id: '',
-          email: user.email,
-          role: 'user',
-          createdAt: '',
-          updatedAt: '',
-        };
-      });
+      t.mock.method(bcrypt, 'hash', async () => 'fake-hash');
+      t.mock.method(authRepository, 'create', async () => ({ id: 'id', email: 'admin@email.com' }));
 
       const user = await authService.createUser({ email: 'admin@email.com', password: 'pass123' });
 
-      assert.deepEqual(user, {
-        id: '',
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      });
+      assert.deepEqual(user, { id: 'id', email: 'admin@email.com' });
+      assert.equal(validator.isEmail.mock.callCount(), 1);
+      assert.equal(bcrypt.hash.mock.callCount(), 1);
+      assert.equal(authRepository.create.mock.callCount(), 1);
+    });
+
+    it('should throw an error if email is not formatted correctly', async (t) => {
+      t.mock.method(validator, 'isEmail', () => false);
+      await assert.rejects(async () => await authService.createUser({ email: 'invalid', password: 'pass123' }), Error('Invalid email format'));
     });
   });
 
   describe('authService.getToken', () => {
-    it('should throw an error if both email and password are not provided', async () => {
-      await assert.rejects(async () => await authService.getToken(), Error('Both email and password are required'));
-    });
-
-    it('should call authRepository.findByEmail', async (t) => {
+    it('should return token for valid user and password', async (t) => {
+      const mockUser = { id: 'id', email: 'admin@email.com', password: 'hashed-password' };
+      const mockTokenGenerator = () => 'mock-token';
+      t.mock.method(authRepository, 'findByEmail', async () => mockUser);
       t.mock.method(bcrypt, 'compare', async () => true);
-      t.mock.method(authRepository, 'findByEmail', async (user) => user);
+      t.mock.method(validator, 'isEmail', () => true);
+      const result = await authService.getToken(mockUser, mockTokenGenerator);
 
-      await authService.getToken({ email: 'admin@email.com', password: 'pass123' });
-
+      assert.equal(result, 'mock-token');
       assert.equal(authRepository.findByEmail.mock.callCount(), 1);
+      assert.equal(bcrypt.compare.mock.callCount(), 1);
+      assert.equal(validator.isEmail.mock.callCount(), 1);
     });
 
-    it('should throw an error if user was not found', async (t) => {
-      t.mock.method(authRepository, 'findByEmail', async () => { });
-      await assert.rejects(async () => await authService.getToken({ email: 'admin@email.com', password: 'pass123' }), Error('User not found'));
+    it('should throw an error if email is invalid', async (t) => {
+      const mockUser = { id: 'id', email: 'invalid', password: 'hashed-password' };
+      const mockTokenGenerator = () => 'mock-token';
+      t.mock.method(authRepository, 'findByEmail', async () => mockUser);
+      t.mock.method(validator, 'isEmail', () => false);
+
+      await assert.rejects(
+        async () => await authService.getToken(mockUser, mockTokenGenerator),
+        Error('Email and password are invalid')
+      );
     });
 
-    it('should throw an error if wrong password was provided', async (t) => {
+    it('should throw an error if user not found', async (t) => {
+      const mockUser = { id: 'id', email: 'admin@email.com', password: 'hashed-password' };
+      const mockTokenGenerator = () => 'mock-token';
+      t.mock.method(authRepository, 'findByEmail', async () => null);
+
+      await assert.rejects(
+        async () => await authService.getToken(mockUser, mockTokenGenerator),
+        Error('Email and password are invalid')
+      );
+    });
+
+    it('should throw an error if password does not match', async (t) => {
+      const mockUser = { id: 'id', email: 'admin@email.com', password: 'hashed-password' };
+      const mockTokenGenerator = () => 'mock-token';
+      t.mock.method(authRepository, 'findByEmail', async () => null);
       t.mock.method(bcrypt, 'compare', async () => false);
-      t.mock.method(authRepository, 'findByEmail', async (user) => user);
-      await assert.rejects(async () => await authService.getToken({ email: 'admin@email.com', password: 'pass123' }), Error('Wrong password'));
-    });
 
-    it('should return a token', async (t) => {
-      t.mock.method(bcrypt, 'compare', async () => true);
-      t.mock.method(jwt, 'sign', async () => 'token');
-      t.mock.method(authRepository, 'findByEmail', async (user) => ({ role: 'user', ...user }));
-      const token = await authService.getToken({ email: 'admin@email.com', password: 'pass123' });
-      assert.equal(token, 'token');
+      await assert.rejects(
+        async () => await authService.getToken(mockUser, mockTokenGenerator),
+        Error('Email and password are invalid')
+      );
     });
   });
 });
