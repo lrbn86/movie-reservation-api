@@ -49,7 +49,7 @@ describe('Auth Service Test', () => {
 
       await assert.rejects(
         async () => await authService.getToken(mockUser, mockTokenGenerator),
-        Error('Email and password are invalid')
+        Error('Invalid credentials')
       );
     });
 
@@ -60,7 +60,7 @@ describe('Auth Service Test', () => {
 
       await assert.rejects(
         async () => await authService.getToken(mockUser, mockTokenGenerator),
-        Error('Email and password are invalid')
+        Error('Invalid credentials')
       );
     });
 
@@ -72,7 +72,7 @@ describe('Auth Service Test', () => {
 
       await assert.rejects(
         async () => await authService.getToken(mockUser, mockTokenGenerator),
-        Error('Email and password are invalid')
+        Error('Invalid credentials')
       );
     });
   });
