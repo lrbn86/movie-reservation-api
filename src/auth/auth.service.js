@@ -3,7 +3,6 @@ import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import authRepository from './auth.repository.js';
 
-
 async function createUser(userData) {
   const email = typeof userData?.email === 'string' ? userData.email.trim().toLowerCase() : '';
   const password = typeof userData?.password === 'string' ? userData.password : '';
@@ -49,7 +48,11 @@ async function generateAccessToken(user) {
   };
 
   try {
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5m', algorithm: 'HS256' });
+    const token = jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: '5m', algorithm: 'HS256' }
+    );
     return token;
   } catch (err) {
     throw new Error('Failed to generate access token');
