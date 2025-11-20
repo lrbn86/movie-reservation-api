@@ -5,7 +5,7 @@ import reservationService from './reservation.service.js';
 import app from '../../app.js';
 
 describe('Reservation Controller Test', () => {
-  describe('reservation.addReservation', () => {
+  describe('reservationController.createReservation', () => {
     it('should create a reservation with valid inputs and return 201', async (t) => {
       const mockData = { title: 'Title', seats: 2, date: new Date('11-19-2025').toISOString() };
       t.mock.method(reservationService, 'createReservation', async () => mockData);
