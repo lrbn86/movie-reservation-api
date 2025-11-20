@@ -1,6 +1,6 @@
 import reservationService from './reservation.service.js';
 
-async function addReservation(req, res) {
+async function createReservation(req, res) {
   const title = req.body?.title;
   const seats = req.body?.seats;
   const date = req.body?.date;
@@ -31,7 +31,7 @@ async function updateReservation(req, res) { }
 async function deleteReservation(req, res) { }
 
 export default {
-  addReservation,
+  createReservation,
   getReservations,
   getReservation,
   updateReservation,
