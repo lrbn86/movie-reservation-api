@@ -1,16 +1,19 @@
-import { describe, it } from 'node:test';
+import { describe, it, before, mock } from 'node:test';
 import assert from 'node:assert';
 import reservationRepository from './reservation.repository.js';
 import reservationService from './reservation.service.js';
 
 describe('Reservation Service Test', () => {
-  it('should create a reservation if valid showtime and available seats', async (t) => {
-    t.mock.method(reservationRepository, 'findShowtime', async () => true);
-    t.mock.method(reservationRepository, 'findSeats', async () => true);
+  before(() => {
+    mock.method(reservationRepository, 'findShowtime', async () => true);
+    mock.method(reservationRepository, 'findSeats', async () => true);
+  });
+
+  it('should create a reservation if valid showtime and available seats', async () => {
     const reservationRequest = {
       userId: 'userId',
       movieId: 'movieId',
-      showtime: 'showtimeId',
+      showtimeId: 'showtimeId',
       seats: ['A16', 'A17'],
     };
     const reservation = await reservationService.createReservation(reservationRequest);
@@ -20,12 +23,11 @@ describe('Reservation Service Test', () => {
   });
 
   it('should not create a reservation if valid showtime but unavailable seats', async (t) => {
-    t.mock.method(reservationRepository, 'findShowtime', async () => true);
-    t.mock.method(reservationRepository, 'findSeats', async () => false);
+    reservationRepository.findSeats.mock.mockImplementationOnce(async () => false);
     const reservationRequest = {
       userId: 'userId',
       movieId: 'movieId',
-      showtime: 'showtimeId',
+      showtimeId: 'showtimeId',
       seats: ['A16', 'A17'],
     };
 
@@ -34,12 +36,12 @@ describe('Reservation Service Test', () => {
     }, Error('Reservation could not be made due to no availability'));
   });
 
-  it('should not create a reservation if invalid showtime', async (t) => {
-    t.mock.method(reservationRepository, 'findShowtime', async () => false);
+  it('should not create a reservation if invalid showtime', async () => {
+    reservationRepository.findShowtime.mock.mockImplementationOnce(async () => false);
     const reservationRequest = {
       userId: 'userId',
       movieId: 'movieId',
-      showtime: 'showtimeId',
+      showtimeId: 'showtimeId',
       seats: ['A16', 'A17'],
     };
 
@@ -48,7 +50,7 @@ describe('Reservation Service Test', () => {
     }, Error('Invalid showtime'));
   });
 
-  it('should throw an error on invalid inputs', async (t) => {
+  it('should throw an error on invalid inputs', async () => {
     const error = new Error('Invalid reservation request');
 
     await assert.rejects(async () => {
