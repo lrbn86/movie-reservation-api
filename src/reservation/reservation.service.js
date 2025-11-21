@@ -19,10 +19,10 @@ async function getAllReservations() { }
 function validate(reservationRequest) {
   const userId = reservationRequest?.userId;
   const movieId = reservationRequest?.movieId;
-  const showtime = reservationRequest?.showtime;
+  const showtimeId = reservationRequest?.showtime;
   const seats = reservationRequest?.seats;
 
-  if (!userId || !movieId || !showtime || !seats) {
+  if (!userId || !movieId || !showtimeId || !seats) {
     throw new Error('Invalid reservation request');
   }
 }
@@ -32,7 +32,11 @@ async function checkAvailability(reservationRequest) {
   const hasShowtime = await reservationRepository.findShowtime(showtime);
   const hasValidSeats = await reservationRepository.findSeats(seats);
 
-  if (!hasShowtime || !hasValidSeats) {
+  if (!hasShowtime) {
+    throw new Error('Invalid showtime');
+  }
+
+  if (!hasValidSeats) {
     throw new Error('Reservation could not be made due to no availability');
   }
 }
