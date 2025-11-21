@@ -1,5 +1,5 @@
 async function create(data) {
-  const reservation = { status: 'active', ...data };
+  const reservation = { status: 'reserved', ...data };
   return reservation;
 }
 

@@ -4,55 +4,87 @@ import reservationRepository from './reservation.repository.js';
 import reservationService from './reservation.service.js';
 
 describe('Reservation Service Test', () => {
-  describe('reservationService.createReservation', () => {
-    it('should create and return a reservation with valid inputs and it is available', async (t) => {
-      const reservationRequest = {
+  it('should create a reservation if valid showtime and available seats', async (t) => {
+    t.mock.method(reservationRepository, 'findShowtime', async () => true);
+    t.mock.method(reservationRepository, 'findSeats', async () => true);
+    const reservationRequest = {
+      userId: 'userId',
+      movieId: 'movieId',
+      showtime: 'showtimeId',
+      seats: ['A16', 'A17'],
+    };
+    const reservation = await reservationService.createReservation(reservationRequest);
+    const expected = { status: 'reserved', ...reservationRequest };
+
+    assert.deepEqual(reservation, expected);
+  });
+
+  it('should not create a reservation if valid showtime but unavailable seats', async (t) => {
+    t.mock.method(reservationRepository, 'findShowtime', async () => true);
+    t.mock.method(reservationRepository, 'findSeats', async () => false);
+    const reservationRequest = {
+      userId: 'userId',
+      movieId: 'movieId',
+      showtime: 'showtimeId',
+      seats: ['A16', 'A17'],
+    };
+
+    await assert.rejects(async () => {
+      return await reservationService.createReservation(reservationRequest);
+    }, Error('Reservation could not be made due to no availability'));
+  });
+
+  it('should not create a reservation if invalid showtime', async (t) => {
+    t.mock.method(reservationRepository, 'findShowtime', async () => false);
+    const reservationRequest = {
+      userId: 'userId',
+      movieId: 'movieId',
+      showtime: 'showtimeId',
+      seats: ['A16', 'A17'],
+    };
+
+    await assert.rejects(async () => {
+      return await reservationService.createReservation(reservationRequest);
+    }, Error('Invalid showtime'));
+  });
+
+  it('should throw an error on invalid inputs', async (t) => {
+    const error = new Error('Invalid reservation request');
+
+    await assert.rejects(async () => {
+      return await reservationService.createReservation();
+    }, error, 'no fields should be provided');
+
+    await assert.rejects(async () => {
+      return await reservationService.createReservation({
         userId: 'userId',
         movieId: 'movieId',
-        showtime: new Date('11-20-2025'),
-        seats: ['A16', 'A17'],
-      };
-      t.mock.method(reservationRepository, 'create', async () => ({ status: 'active', ...reservationRequest }));
-      t.mock.method(reservationRepository, 'findShowtime', async () => true);
-      t.mock.method(reservationRepository, 'findSeats', async () => true);
-      const reservation = await reservationService.createReservation(reservationRequest);
+        showtimeId: 'showtimeId',
+      });
+    }, error, 'seats should not be provided');
 
-      assert.deepEqual(reservation, { status: 'active', ...reservationRequest });
-    });
-
-    it('should throw an error when creating a reservation with invalid inputs', async (t) => {
-      const reservationRequest = {
-        userId: 'userId',
-        showtime: new Date('11-20-2025'),
-        seats: ['A16', 'A17'],
-      };
-      t.mock.method(reservationRepository, 'create', async () => ({ status: 'active', ...reservationRequest }));
-      t.mock.method(reservationRepository, 'findShowtime', async () => true);
-      t.mock.method(reservationRepository, 'findSeats', async () => true);
-
-      await assert.rejects(async () => await reservationService.createReservation(reservationRequest), Error('Invalid reservation request'));
-    });
-
-    it('should throw an error when creating a reservation with no availability', async (t) => {
-      const reservationRequest = {
+    await assert.rejects(async () => {
+      return await reservationService.createReservation({
         userId: 'userId',
         movieId: 'movieId',
-        showtime: new Date('11-20-2025'),
-        seats: ['A16', 'A17'],
-      };
-      t.mock.method(reservationRepository, 'create', async () => ({ status: 'active', ...reservationRequest }));
+        seats: ['A16'],
+      });
+    }, error, 'showtimeId should not be provided');
 
-      t.mock.method(reservationRepository, 'findShowtime', async () => true);
-      t.mock.method(reservationRepository, 'findSeats', async () => false);
-      await assert.rejects(async () => await reservationService.createReservation(reservationRequest), Error('Reservation could not be made due to no availability'));
+    await assert.rejects(async () => {
+      return await reservationService.createReservation({
+        userId: 'userId',
+        showtimeId: 'showtimeId',
+        seats: ['A16'],
+      });
+    }, error, 'movieId should not be provided');
 
-      t.mock.method(reservationRepository, 'findShowtime', async () => false);
-      t.mock.method(reservationRepository, 'findSeats', async () => true);
-      await assert.rejects(async () => await reservationService.createReservation(reservationRequest), Error('Reservation could not be made due to no availability'));
-
-      t.mock.method(reservationRepository, 'findShowtime', async () => false);
-      t.mock.method(reservationRepository, 'findSeats', async () => false);
-      await assert.rejects(async () => await reservationService.createReservation(reservationRequest), Error('Reservation could not be made due to no availability'));
-    });
+    await assert.rejects(async () => {
+      return await reservationService.createReservation({
+        movieId: 'movieId',
+        showtimeId: 'showtimeId',
+        seats: ['A16'],
+      });
+    }, error, 'userId should not be provided');
   });
 });
