@@ -1,23 +1,17 @@
 import reservationService from './reservation.service.js';
 
 async function createReservation(req, res) {
-  const title = req.body?.title;
-  const seats = req.body?.seats;
-  const date = req.body?.date;
+  const userId = req?.body?.userId;
+  const movieId = req?.body?.movieId;
+  const showtimeId = req?.body?.showtimeId;
+  const seats = req?.body?.seats;
 
-  if (!title) {
-    return res.status(400).json({ error: 'Missing title' });
+  if (!userId || !movieId || !showtimeId || !seats) {
+    return res.status(400).json({ error: 'Missing required fields: userId, movieId, showtimeId, seats' });
   }
 
-  if (!seats) {
-    return res.status(400).json({ error: 'Missing seats' });
-  }
-
-  if (!date) {
-    return res.status(400).json({ error: 'Missing date' });
-  }
-
-  const reservation = await reservationService.createReservation({ title, seats, date });
+  const reservationRequest = { userId, movieId, showtimeId, seats };
+  const reservation = await reservationService.createReservation(reservationRequest);
 
   return res.status(201).json(reservation);
 }
